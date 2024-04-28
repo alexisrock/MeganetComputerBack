@@ -11,8 +11,8 @@ Este aplicativo tiene una arquitecura mvc, tiene un modelo en donde estan las en
 <h2 align="left"> Tecnologias utilizadas</h2>
 <p>
     <li>Nodejs</li>
-    <li>Mongoose 5.11.14 </li>
-    <li>express 4.17.1</li>
+    <li>Mongoose 8.3.2 </li>
+    <li>express 4.19.2</li>
 </p>
 <h2 align="left"> Version del aplicativo</h2>
 <p> V.0.0.1</p>
