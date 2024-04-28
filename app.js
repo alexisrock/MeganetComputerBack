@@ -1,25 +1,25 @@
-var createError = require('http-errors');
-var express = require('express');
-var path = require('path');
-var cookieParser = require('cookie-parser');
-var logger = require('morgan');
+let createError = require('http-errors');
+let express = require('express');
+let path = require('path');
+let cookieParser = require('cookie-parser');
+let logger = require('morgan');
 
 const jwt = require('jsonwebtoken');
 
 
 
-var indexRouter = require('./routes/index');
-var usersRouter = require('./routes/users');
-var clienteRouter = require('./Api Services/Cliente/ClienteRoutes');
-var categoriaRouter = require('./Api Services/Categoria/CategoriaRoutes');
-var invetarioRouter = require('./Api Services/Invetario/InventarioRoutes');
-var marcaRouter = require('./Api Services/Marca/MarcaRoutes');
-var productoRouter = require('./Api Services/Producto/ProductoRoutes');
-var facturaRouter = require('./Api Services/Factura/FacturaRoutes');
-var authApiRouter = require('./Api Services/Auth/AuthRoutes');
-var vendedorRouter = require('./Api Services/Vendedor/VendedorRoutes');
-var cors = require('cors');
-var app = express();
+let indexRouter = require('./routes/index');
+let usersRouter = require('./routes/users');
+let clienteRouter = require('./Api Services/Cliente/ClienteRoutes');
+let categoriaRouter = require('./Api Services/Categoria/CategoriaRoutes');
+let invetarioRouter = require('./Api Services/Invetario/InventarioRoutes');
+let marcaRouter = require('./Api Services/Marca/MarcaRoutes');
+let productoRouter = require('./Api Services/Producto/ProductoRoutes');
+let facturaRouter = require('./Api Services/Factura/FacturaRoutes');
+let authApiRouter = require('./Api Services/Auth/AuthRoutes');
+let vendedorRouter = require('./Api Services/Vendedor/VendedorRoutes');
+let cors = require('cors');
+let app = express();
 app.set('secretKey', 'Meganet162');
 
 
@@ -27,12 +27,12 @@ app.use(cors());
 
 
 
-var mongoose = require('mongoose');
+let mongoose = require('mongoose');
 const { assert } = require('console');
-var mongoDB = 'mongodb://localhost/Meganet'
+let mongoDB = 'mongodb://localhost/Meganet'
 mongoose.connect(mongoDB, { useNewUrlParser: true, useUnifiedTopology: true, useCreateIndex: true});
 mongoose.Promise = global.Promise;
-var db = mongoose.connection;
+let db = mongoose.connection;
 db.on('error', console.error.bind(console, 'MongoDB Connection error:'));
 
 
