@@ -1,0 +1,27 @@
+export class Cliente {
+    cedula!: {
+        type: string;
+        required: [true, 'La cedula es obligatoria'];
+        trim: true;
+        unique: true;
+    };
+    nombre!: {
+        type: string;
+        trim: true;
+    };
+    apellidos!: string;
+    direccion!: string;
+    telefono!: string;
+    email!: string;       
+    password!: {
+        type: string;
+        required: [true, 'El password es obligatorio es obligatorio'];
+
+    };
+    estado!: {
+        type: Boolean;
+        default: false;
+    };
+    passwordResetToken!: string;
+    passwordResetTokenExpires!: Date;
+}
