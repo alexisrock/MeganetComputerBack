@@ -19,7 +19,7 @@ export class Cliente {
 
     };
     estado!: {
-        type: Boolean;
+        type: boolean;
         default: false;
     };
     passwordResetToken!: string;

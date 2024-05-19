@@ -2,8 +2,9 @@
 import { Cliente } from "../Domain/Cliente";
 // import   { bcrypt } from 'bcrypt';
 import { AuthRepository } from '../DataAccess/authRepository';
+import { Service } from "typedi";
 
-
+@Service()
 export class AuthService{
     private readonly authRepository:  AuthRepository;
 
@@ -12,13 +13,17 @@ export class AuthService{
     }
 
     async authentication(email: string, pass: string) : Promise<Cliente | undefined> {
+
+        if(email=== "" ||  pass==="")
+            return undefined;
+
         const cliente: Cliente | undefined = await this.authRepository.findById(email);
         
         if(cliente === undefined || cliente === null){           
             return undefined;             
-        }
-        
-        
+        }       
+  
+       
         
         
         // else{

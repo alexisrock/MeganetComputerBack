@@ -1,28 +1,22 @@
 // src/app.module.ts
+import 'reflect-metadata';
 
-import { Express } from 'express';
-import { AuthService } from './app/Core/authService';
-import { AuthController } from './app/Presentation/AuthController';
+import express from 'express';
+import { router } from './routes/router';
 
-export class AppModule {
-  private readonly app: Express;
+const main = async () => {
+  const app = express();
 
-  constructor(private readonly authService: AuthService) {
-    this.app = express();
-  }
+  app.use(router);
 
-  configureControllers(): void {
-    const authController = new AuthController(this.authService);
-    this.app.use('/auth', authController.authenticate);
-  }
-
-  start(): void {
-    this.configureControllers();
-    this.app.listen(300)
-  
-  }
+  app.listen(3000, () => {
+    console.log('Server started 3000');
+  });
 }
 
+main().catch(err => {
+  console.error(err);
+});
 // let createError = require('http-errors');
 
 // let path = require('path');

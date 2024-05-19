@@ -1,19 +1,31 @@
-import { MongoClient, Collection } from "mongodb";
+// import { MongoClient, Collection } from "mongodb";
 import { IRepository } from "./IRespository";
 import { Cliente } from "../Domain/Cliente";
+import { Service } from "typedi";
 
 
-
+@Service()
 export class AuthRepository implements IRepository{
 
-    private readonly Cliente: Collection<Cliente>;
+    // private readonly Cliente: Collection<Cliente>;
     
-    constructor(client: MongoClient, dbName: string, collectionName: string) {
-        this.Cliente = client.db(dbName).collection<Cliente>(collectionName);
-      }
+    // constructor(client: MongoClient, dbName: string, collectionName: string) {
+    //     // this.Cliente = client.db(dbName).collection<Cliente>(collectionName);
+    //   }
+    constructor(){}
 
     async findById(email: string ): Promise< any| undefined> {
-        return await this.Cliente.findOne({ email: email});         
+
+        if(email=== "" || email ===  undefined )
+            return Promise.resolve(undefined);
+        // return await this.Cliente.findOne({ email: email});   
+        
+        
+        let cliente: Cliente = new Cliente();
+        cliente.apellidos = "Bueno castro"
+
+        return Promise.resolve(cliente);
+       
     }
 
 
@@ -25,8 +37,6 @@ export class AuthRepository implements IRepository{
     //     }
     //      next();
     // });
-    
-
 
 
 }

@@ -1,20 +1,28 @@
 import { Request, Response } from 'express';
 // import   { bcrypt } from 'bcrypt';
 import { AuthService } from '../Core/authService';
-AuthService
+import { Service } from 'typedi';
+
+@Service()
 export class AuthController{
+
 private readonly authService: AuthService;
+
     constructor(authService: AuthService){
         this.authService = authService;
     }
 
     async authenticate(req: Request, res: Response){      
         try {
-
+            console.log("parametros",req.params)
             const email: string = req.params.email;
             const pass: string  = req.params.pass;
-            const cliente = await this.authService.authentication(email, pass);        
-            if (cliente) {
+
+            console.log("authService", this.authService)
+            const cliente = await this.authService.authentication(email, pass);  
+            console.log("cliente",cliente) 
+            if (cliente) {               
+
               res.json(cliente);
             } else {
               res.status(404).send('Usuario no encontrado');
