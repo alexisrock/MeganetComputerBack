@@ -1,6 +1,5 @@
 // src/app.module.ts
 import 'reflect-metadata';
-
 import express from 'express';
 import { router } from './routes/router';
 
@@ -8,7 +7,7 @@ const main = async () => {
   const app = express();
 
   app.use(router);
-
+  app.set('secretKey', 'Meganet162');
   app.listen(3000, () => {
     console.log('Server started 3000');
   });

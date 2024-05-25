@@ -1,8 +1,10 @@
 
 import { Cliente } from "../Domain/Cliente";
-// import   { bcrypt } from 'bcrypt';
+import   { compareSync } from 'bcrypt';
 import { AuthRepository } from '../DataAccess/authRepository';
 import { Service } from "typedi";
+import jwt from 'jsonwebtoken';
+import { Token } from "../Domain/Token";
 
 @Service()
 export class AuthService{
@@ -12,34 +14,39 @@ export class AuthService{
         this.authRepository = authRepository;        
     }
 
-    async authentication(email: string, pass: string) : Promise<Cliente | undefined> {
+    async authentication(email: string, pass: string, secret: string) : Promise<Token | undefined> {
 
+        const token = new Token();
+
+        const cliente: Cliente  | undefined = await this.validateEmail(email, pass)
+        
+        if(cliente === undefined || cliente === null)        
+            return undefined;             
+        
+
+        if(compareSync(pass, cliente.password.type)){          
+            const tokenString = jwt.sign({id: cliente._id}, secret, { expiresIn: '7d'});          
+            token.token = tokenString;
+            token.message = "Usuario encontrado"
+            token.status = 200;
+            return Promise.resolve(token);
+        }
+        
+        token.token = "";
+        token.status = 401;
+        token.message = "Invalid email/password";
+        return Promise.resolve(token);
+
+    }
+
+
+
+     private async validateEmail(email: string, pass: string,): Promise<Cliente | undefined>{
         if(email=== "" ||  pass==="")
-            return undefined;
+         return undefined;
 
         const cliente: Cliente | undefined = await this.authRepository.findById(email);
-        
-        if(cliente === undefined || cliente === null){           
-            return undefined;             
-        }       
-  
-       
-        
-        
-        // else{
-        //     if(userinfo===null){ return   res.status(401).json({status: 'error', message: 'Cliente no encontrado'});}
-        //     if(userinfo!= null && bcrypt.compareSync(req.body.password, userinfo.password)){
-        //         userinfo.save(function(err, usuario){
-        //             const token = jwt.sign({id: userinfo._id}, req.app.get('secretKey'), { expiresIn: '7d'});
-        //             res.status(200).json({ message: 'Usuario encontrado', data: {usuario: usuario, token:token}});
-        //         });
-        //     }else{
-        //         res.status(401).json({status: 'error', message: 'Invalid email/password'});
-        //     }
-        // }
-  
-
-
+        return Promise.resolve(cliente);
     }
 
 

@@ -1,4 +1,5 @@
 export class Cliente {
+    _id:string | undefined;
     cedula!: {
         type: string;
         required: [true, 'La cedula es obligatoria'];
