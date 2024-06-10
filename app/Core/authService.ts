@@ -1,18 +1,21 @@
 
 import { Cliente } from "../Domain/Cliente";
 import   { compareSync } from 'bcrypt';
-import { AuthRepository } from '../DataAccess/authRepository';
-import { Service } from "typedi";
 import jwt from 'jsonwebtoken';
 import { Token } from "../Domain/Token";
+import { inject, injectable } from "inversify";
+import { IAuthService } from "./iAuthService";
+import { IRepository } from "../DataAccess/IRespository";
+import { TYPES } from "../Domain/Type";
 
-@Service()
-export class AuthService{
-    private readonly authRepository:  AuthRepository;
+@injectable()
+export class AuthService implements IAuthService{
+    private authRepository:  IRepository
 
-    constructor( authRepository:  AuthRepository ){
-        this.authRepository = authRepository;        
+    constructor( @inject(TYPES.IRepository)  _authRepository:  IRepository ){ 
+        this.authRepository = _authRepository;
     }
+
 
     async authentication(email: string, pass: string, secret: string) : Promise<Token | undefined> {
 
@@ -20,6 +23,7 @@ export class AuthService{
 
         const cliente: Cliente  | undefined = await this.validateEmail(email, pass)
         
+        console.log("metodo llamado: ",cliente)
         if(cliente === undefined || cliente === null)        
             return undefined;             
         
@@ -42,10 +46,16 @@ export class AuthService{
 
 
      private async validateEmail(email: string, pass: string,): Promise<Cliente | undefined>{
-        if(email=== "" ||  pass==="")
-         return undefined;
-
-        const cliente: Cliente | undefined = await this.authRepository.findById(email);
+        let cliente: Cliente | undefined ;
+        try {
+            if(email=== "" ||  pass===""){
+                return undefined;    
+            }
+            cliente  = await this.authRepository.findById(email);
+              console.log(cliente)
+        } catch (error) {
+            console.log(error)            
+        }
         return Promise.resolve(cliente);
     }
 

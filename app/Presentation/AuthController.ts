@@ -1,19 +1,23 @@
 import { Request, Response } from 'express';
-import { AuthService } from '../Core/authService';
-import { Service } from 'typedi';
+import { controller, httpPost } from 'inversify-express-utils';
+import { inject } from 'inversify';
+import { IAuthService } from '../Core/iAuthService';
+import { TYPES } from '../Domain/Type';
 
-@Service()
+
+@controller("/auth")
 export class AuthController{
 
-private readonly authService: AuthService;
 
-    constructor(authService: AuthService){
-        this.authService = authService;
+    private authService: IAuthService;
+    constructor( @inject(TYPES.IAuthService)  _authService: IAuthService){
+        this.authService = _authService;
     }
 
+    @httpPost("/")
     async authenticate(req: Request, res: Response){      
         try {
-          
+         
             const email: string = req.params.email;
             const pass: string  = req.params.pass;
             const secret: string = req.app.get('secretKey');            

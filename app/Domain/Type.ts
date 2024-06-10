@@ -1,0 +1,5 @@
+export const TYPES = {
+    AuthController: Symbol.for('AuthController'),
+    IAuthService: Symbol.for('IAuthService'),
+    IRepository: Symbol.for('IRepository'),
+    };

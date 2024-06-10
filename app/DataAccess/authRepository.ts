@@ -1,28 +1,27 @@
-// import { MongoClient, Collection } from "mongodb";
 import { IRepository } from "./IRespository";
-import { Cliente } from "../Domain/Cliente";
-import { Service } from "typedi";
+import { MongoConecction } from "./mongoConnection";
+import { injectable } from "inversify";
 
 
-@Service()
+
+@injectable()
 export class AuthRepository implements IRepository{
-
-    // private readonly Cliente: Collection<Cliente>;
     
-    // constructor(client: MongoClient, dbName: string, collectionName: string) {
-    //     // this.Cliente = client.db(dbName).collection<Cliente>(collectionName);
-    //   }
-    constructor(){}
+    private monggoConecction : MongoConecction
 
+   constructor() {
+      this.monggoConecction = new MongoConecction()
+    }
+  
+   
     async findById(email: string ): Promise< any| undefined> {
-
+        console.log(email)
         if(email=== "" || email ===  undefined )
             return Promise.resolve(undefined);
-        // return await this.Cliente.findOne({ email: email});   
-        
-        
-        let cliente: Cliente = new Cliente();
-        cliente.apellidos = "Bueno castro"
+        // return await this.Cliente.findOne({ email: email}); 
+        console.log("paso por aqui dos")
+        const client = await this.monggoConecction.getDatabase("Usuario");    
+        let cliente =  await client.findOne({ email: email}); 
 
         return Promise.resolve(cliente);
        
