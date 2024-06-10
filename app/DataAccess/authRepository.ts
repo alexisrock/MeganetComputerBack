@@ -20,7 +20,7 @@ export class AuthRepository implements IRepository{
             return Promise.resolve(undefined);
         // return await this.Cliente.findOne({ email: email}); 
         console.log("paso por aqui dos")
-        const client = await this.monggoConecction.getDatabase("Usuario");    
+        const client = await this.monggoConecction.getDatabase("Cliente");    
         let cliente =  await client.findOne({ email: email}); 
 
         return Promise.resolve(cliente);
