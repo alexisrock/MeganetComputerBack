@@ -35,6 +35,25 @@ export class AuthController{
             return res.status(500).send('error: '+ error);
         }     
     }
+
+
+    @httpPost("/create")
+    async create(req: Request, res: Response){
+        try {             
+            const cliente = await this.authService.createAuth(req);
+            if(cliente !==null || cliente !== undefined){
+                return res.status(200).send(cliente);
+            }
+
+            return res.status(404).send();
+        } catch (error) {
+            return res.status(500).send('error: '+ error);
+        }
+
+        
+    }
+
+
 }
 // const Cliente = require('../Cliente/Cliente');
 // const Vendedor = require('../Vendedor/Vendedor');

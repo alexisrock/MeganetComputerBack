@@ -6,7 +6,7 @@ La idea principal de esta api es manejar toda la logica para el control de los p
 </p>
 <h2 align="left"> Arquitectura</h2>
 <p>
-Este aplicativo tiene una arquitecura mvc, tiene un modelo en donde estan las entidades o clases y dao  donde se realizan  el crud, y un controlador donde se maneja la logica y la funcionalidad del aplicativo, ademas utiliza la  base de datos no relacional mongoDB.
+Este aplicativo utiliza una arquitectura en capas, tiene inyeccion de dependencias entre las capas de la logica del negocio y la capa de presentacion a si como entre las capas de accceso a datos y la logica del negocio.
 </p>
 <h2 align="left"> Tecnologias utilizadas</h2>
 <p>
@@ -15,4 +15,4 @@ Este aplicativo tiene una arquitecura mvc, tiene un modelo en donde estan las en
     <li>express 4.19.2</li>
 </p>
 <h2 align="left"> Version del aplicativo</h2>
-<p> V.0.0.1</p>
+<p> V.1.0.0</p>

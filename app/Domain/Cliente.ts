@@ -14,11 +14,7 @@ export class Cliente {
     direccion!: string;
     telefono!: string;
     email!: string;       
-    password!: {
-        type: string;
-        required: [true, 'El password es obligatorio es obligatorio'];
-
-    };
+    password!:  string;     
     estado!: {
         type: boolean;
         default: false;
