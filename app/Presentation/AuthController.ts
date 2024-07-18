@@ -41,11 +41,11 @@ export class AuthController{
     async create(req: Request, res: Response){
         try {             
             const cliente = await this.authService.createAuth(req);
-            if(cliente !==null || cliente !== undefined){
-                return res.status(200).send(cliente);
+            if(cliente?.status === 200){
+                return res.status(cliente?.status).send(cliente);
             }
 
-            return res.status(404).send();
+            return res.status(404).send(cliente);
         } catch (error) {
             return res.status(500).send('error: '+ error);
         }
