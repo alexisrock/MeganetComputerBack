@@ -1,15 +1,15 @@
 
-import { Cliente } from "../Domain/Cliente";
+import { Cliente } from "../../Domain/Cliente";
 import   { compareSync, hashSync } from 'bcrypt';
 import jwt from 'jsonwebtoken';
-import { Token } from "../Domain/Responses/Token";
+import { Token } from "../../Domain/Responses/Token";
 import { inject, injectable } from "inversify";
-import { IAuthService } from "./iAuthService";
-import { IRepository } from "../DataAccess/IRespository";
-import { TYPES } from "../Domain/Type";
+import { IAuthService } from "../Interface/IAuthService";
+import { IRepository } from "../../DataAccess/Interface/IRespository";
+import { TYPES } from "../../Domain/Type";
 import { Request } from 'express';
-import { ClienteResponse } from "../Domain/Responses/ClienteResponse";
-import { Status } from "../Domain/Enums/Status";
+import { ClienteResponse } from "../../Domain/Responses/ClienteResponse";
+import { Status } from "../../Domain/Enums/Status";
  
 @injectable()
 export class AuthService implements IAuthService{
@@ -23,20 +23,26 @@ export class AuthService implements IAuthService{
     async authentication(email: string, pass: string, secret: string) : Promise<Token | undefined> {
 
         let token = new Token();
-
-        const cliente: Cliente  | undefined = await this.validateEmail(email, pass)
-        
-        console.log("metodo llamado: ",cliente)
-        if(cliente === undefined || cliente === null)        
-            return undefined;             
-        
-        if(compareSync(pass, cliente.password)){          
-            const tokenString = jwt.sign({id: cliente._id}, secret, { expiresIn: '7d'});          
-            token = this.getResponseToken(tokenString,"Usuario encontrado",  200);           
-            return Promise.resolve(token);
+        try {
+            
+            const cliente: Cliente  | undefined = await this.validateEmail(email, pass)
+            
+            console.log("metodo llamado: ",cliente)
+            if(cliente === undefined || cliente === null)        
+                return undefined;             
+            
+            if(compareSync(pass, cliente.password)){          
+                const tokenString = jwt.sign({id: cliente._id}, secret, { expiresIn: '7d'});          
+                token = this.getResponseToken(tokenString,"Usuario encontrado",  200);           
+                return Promise.resolve(token);
+            }
+            
+            token = this.getResponseToken("","Invalid email/password",401 ) ;    
+        } catch (error: any) {
+            token.status = Status.internalServerError;            
+            token.message =  error.message;
         }
-        
-        token = this.getResponseToken("","Invalid email/password",401 ) ;       
+   
         return Promise.resolve(token);
 
     }
@@ -63,16 +69,23 @@ export class AuthService implements IAuthService{
         return tokenResponse;
     }
 
-    async createAuth(req: Request): Promise<ClienteResponse| null>{
+    async createAuth(req: Request): Promise<ClienteResponse| undefined>{
+        
+        let clienteResponse: ClienteResponse| undefined;
+        try {
+            if(await this.validateExitsEmail(req.body.emailCli)!==null || await this.validateExitsCedula(req.body.cedulaCli)!==null){
+                return Promise.resolve(this.mapperClienteResponse(null, Status.badResquest, "El numero de cedula  o el correo ya existe"));
+            }
+            let cliente = new  Cliente();
+            cliente =  this.mapperRequestCliente(req);
+            let resultado: string | null = await this.authRepository.insert(cliente);       
+            let client = await this.authRepository.findById(resultado); 
+            clienteResponse = this.mapperClienteResponse(client, Status.ok, "Usuario creado con exito"); 
 
-        if(await this.validateExitsEmail(req.body.emailCli)!==null || await this.validateExitsCedula(req.body.cedulaCli)!==null){
-            return Promise.resolve(this.mapperClienteResponse(null, Status.badResquest, "El numero de cedula  o el correo ya existe"));
+           
+        } catch (error: any) {
+            clienteResponse = this.mapperClienteResponse(null, Status.internalServerError, error.message); 
         }
-        let cliente = new  Cliente();
-        cliente =  this.mapperRequestCliente(req);
-        let resultado: string | null = await this.authRepository.insert(cliente);       
-        let client = await this.authRepository.findById(resultado); 
-        let clienteResponse = this.mapperClienteResponse(client, Status.ok, "Usuario creado con exito"); 
         return Promise.resolve(clienteResponse);
     }
 
@@ -98,7 +111,7 @@ export class AuthService implements IAuthService{
         return Promise.resolve(cliente);
     }
 
-    private mapperClienteResponse(cliente: Cliente | null, status: Status, message: string): ClienteResponse | null{
+    private mapperClienteResponse(cliente: Cliente | null, status: Status, message: string): ClienteResponse | undefined{
         let clienteResponse = new ClienteResponse();
         if(cliente === null){
             clienteResponse.status = status;
@@ -119,5 +132,6 @@ export class AuthService implements IAuthService{
     }
 
 
+    
 
 }

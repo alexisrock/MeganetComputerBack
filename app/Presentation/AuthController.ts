@@ -1,7 +1,7 @@
 import { Request, Response } from 'express';
 import { controller, httpPost } from 'inversify-express-utils';
 import { inject } from 'inversify';
-import { IAuthService } from '../Core/iAuthService';
+import { IAuthService } from '../Core/Interface/IAuthService';
 import { TYPES } from '../Domain/Type';
 
 

@@ -1,5 +1,5 @@
 
-import { Cliente } from "../Domain/Cliente";
+import { Cliente } from "../../Domain/Cliente";
 
 export interface IRepository{
     findByEmail(email: string): Promise<any| null>;   

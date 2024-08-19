@@ -1,12 +1,13 @@
-import { Cliente } from "../Domain/Cliente";
-import { IRepository } from "./IRespository";
-import { MongoConecction } from "./mongoConnection";
+import { Cliente } from "../../Domain/Cliente";
+import { IRepository } from "../Interface/IRespository";
+import { MongoConecction } from "../MongoConnection";
 import { injectable } from "inversify";
 import {  ObjectId } from 'mongodb';
 
 @injectable()
 export class AuthRepository implements IRepository{
     
+    document: string = "Cliente";
     private monggoConecction : MongoConecction
 
    constructor() {
@@ -15,21 +16,18 @@ export class AuthRepository implements IRepository{
     
 
     async findById(id: string): Promise<Cliente | null> {
-        const client = await this.getConectionDataBase();
+        const client = await this. getConectionDataBase(); 
         let documentId = new ObjectId(id);
         let cliente =  await client.findOne({ _id: documentId}); 
+        this.disconnect();
         return Promise.resolve(cliente);
     }
 
-    async getConectionDataBase() {
-        const client = await this.monggoConecction.getDatabase("Cliente");   
-        return client
-    }
-
+    
     async insert(cliente: Cliente): Promise<string | null> {
-        const client = await this.getConectionDataBase();       
+        const client = await this. getConectionDataBase();     
         const result = await client.insertOne(cliente);
-        
+        this.disconnect();
         if (result.insertedId.toHexString()== null || result.insertedId.toHexString() !== undefined) {
             return Promise.resolve(result.insertedId.toHexString());  
         }
@@ -41,8 +39,9 @@ export class AuthRepository implements IRepository{
         if(email=== "" || email ===  undefined )
             return Promise.resolve(null);
               
-        const client = await this.getConectionDataBase();
+        const client = await this. getConectionDataBase();
         let cliente =  await client.findOne({ email: email}); 
+        this.disconnect();
         return Promise.resolve(cliente);       
     }
 
@@ -50,10 +49,17 @@ export class AuthRepository implements IRepository{
         if(cedula=== "" || cedula ===  undefined )
             return Promise.resolve(null);
               
-        const client = await this.getConectionDataBase();
+        const client = await this. getConectionDataBase();
         let cliente =  await client.findOne({ cedula: cedula}); 
+        this.disconnect();
         return Promise.resolve(cliente);   
     }
       
+    async  getConectionDataBase(){
+        return await this.monggoConecction.getConectionDataBase(this.document); 
+    }
 
+    disconnect(){
+        this.monggoConecction.disconnect();
+    }
 }

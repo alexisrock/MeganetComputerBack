@@ -2,7 +2,7 @@ import { MongoClient } from 'mongodb';
  
 
  
-export class MongoConecction{
+export  class MongoConecction{
 
    
   private readonly mongoUri: string="mongodb://mongoadmin:secret@192.168.50.131:4545";
@@ -32,5 +32,12 @@ export class MongoConecction{
     const database = (await this.connect()).db(this.database);
      return database.collection(collection);
   }
+
+
+  async getConectionDataBase(document: string) {
+    const client = await this.getDatabase(document);   
+    return client
+ }
+
 
 }
