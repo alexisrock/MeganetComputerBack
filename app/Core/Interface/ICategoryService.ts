@@ -1,8 +1,8 @@
-import { CategoriaResponse } from "../../Domain/Responses/CategoriaResponse";
+import { CategoriaResponse, CategorysResponse } from "../../Domain/Responses/CategoriaResponse";
 import { Request } from 'express';
 export interface ICategoryService{
 
-    CreateCategoria(req: Request): Promise<CategoriaResponse | undefined>
-
+    createCategoria(req: Request): Promise<CategoriaResponse | undefined>
+    getAllCAtegory(): Promise<CategorysResponse>
 
 }

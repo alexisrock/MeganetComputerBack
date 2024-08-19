@@ -5,7 +5,7 @@ import { MongoClient } from 'mongodb';
 export  class MongoConecction{
 
    
-  private readonly mongoUri: string="mongodb://mongoadmin:secret@192.168.50.131:4545";
+  private readonly mongoUri: string="mongodb://mongoadmin:secret@192.168.50.27:4545";
 
  
   private readonly database: string="meganet";
