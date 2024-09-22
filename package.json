@@ -25,7 +25,7 @@
   "homepage": "https://github.com/alexisrock/MeganetComputerBack#readme",
   "dependencies": {
     "bcrypt": "^5.1.1",
-    "connect-mongodb-session": "^2.2.0",
+    "connect-mongodb-session": "^5.0.0",
     "cookie-parser": "^1.4.6",
     "cors": "^2.8.5",
     "debug": "^4.3.4",
@@ -35,6 +35,7 @@
     "inversify": "^6.0.2",
     "inversify-express-utils": "^6.4.6",
     "jsonwebtoken": "^9.0.2",
+    "meganet": "file:",
     "moment": "^2.30.1",
     "mongoose": "^8.3.2",
     "mongoose-unique-validator": "^5.0.0",
@@ -43,7 +44,6 @@
     "nodemon": "^3.1.0",
     "passport": "^0.7.0",
     "reflect-metadata": "^0.2.2",
-    "serve": "^14.2.3",
     "typedi": "^0.10.0"
   },
   "devDependencies": {
