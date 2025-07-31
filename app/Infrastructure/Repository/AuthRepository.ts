@@ -16,43 +16,62 @@ export class AuthRepository implements IRepository{
     
 
     async findById(id: string): Promise<Cliente | null> {
-        const client = await this. getConectionDataBase(); 
-        let documentId = new ObjectId(id);
-        let cliente =  await client.findOne({ _id: documentId}); 
-        this.disconnect();
-        return Promise.resolve(cliente);
+        try {
+            const client = await this.getConectionDataBase(); 
+            let documentId = new ObjectId(id);
+            let cliente = await client.findOne({ _id: documentId}); 
+            return Promise.resolve(cliente);
+        } catch (error) {
+            throw error;
+        } finally {
+            this.disconnect();
+        }
     }
 
     
     async insert(cliente: Cliente): Promise<string | null> {
-        const client = await this. getConectionDataBase();     
-        const result = await client.insertOne(cliente);
-        this.disconnect();
-        if (result.insertedId.toHexString()== null || result.insertedId.toHexString() !== undefined) {
-            return Promise.resolve(result.insertedId.toHexString());  
+        try {
+            const client = await this.getConectionDataBase();     
+            const result = await client.insertOne(cliente);
+            if (result.insertedId.toHexString()== null || result.insertedId.toHexString() !== undefined) {
+                return Promise.resolve(result.insertedId.toHexString());  
+            }
+            return Promise.resolve(null);
+        } catch (error) {
+            throw error;
+        } finally {
+            this.disconnect();
         }
-        return Promise.resolve(null)
     }  
    
     async findByEmail(email: string ): Promise< Cliente| null> {
-        
-        if(email=== "" || email ===  undefined )
-            return Promise.resolve(null);
-              
-        const client = await this. getConectionDataBase();
-        let cliente =  await client.findOne({ email: email}); 
-        this.disconnect();
-        return Promise.resolve(cliente);       
+        try {
+            if(email=== "" || email ===  undefined )
+                return Promise.resolve(null);
+                  
+            const client = await this.getConectionDataBase();
+            let cliente = await client.findOne({ email: email}); 
+            return Promise.resolve(cliente);
+        } catch (error) {
+            throw error;
+        } finally {
+            this.disconnect();
+        }
     }
 
     async findByCedula(cedula: string | null): Promise<Cliente | null> {
-        if(cedula=== "" || cedula ===  undefined )
-            return Promise.resolve(null);
-              
-        const client = await this. getConectionDataBase();
-        let cliente =  await client.findOne({ cedula: cedula}); 
-        this.disconnect();
-        return Promise.resolve(cliente);   
+        try {
+            if(cedula=== "" || cedula ===  undefined )
+                return Promise.resolve(null);
+                  
+            const client = await this.getConectionDataBase();
+            let cliente = await client.findOne({ cedula: cedula}); 
+            return Promise.resolve(cliente);
+        } catch (error) {
+            throw error;
+        } finally {
+            this.disconnect();
+        }
     }
       
     async  getConectionDataBase(){

@@ -25,7 +25,7 @@ export class AuthService implements IAuthService{
         let token = new Token();
         try {
             
-            const cliente: Cliente  | undefined = await this.validateEmail(email, pass)
+            const cliente: Cliente  | null = await this.validateEmail(email, pass)
             
             console.log("metodo llamado: ",cliente)
             if(cliente === undefined || cliente === null)        
@@ -47,11 +47,11 @@ export class AuthService implements IAuthService{
 
     }
 
-    private async validateEmail(email: string, pass: string,): Promise<Cliente | undefined>{
-        let cliente: Cliente | undefined ;
+    private async validateEmail(email: string, pass: string,): Promise<Cliente | null>{
+        let cliente!: Cliente | null;
         try {
             if(email=== "" ||  pass===""){
-                return undefined;    
+                return null;    
             }
             cliente  = await this.authRepository.findByEmail(email);
               console.log(cliente)

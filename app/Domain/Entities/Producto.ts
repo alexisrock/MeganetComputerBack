@@ -1,48 +1,44 @@
-var mongoose = require('mongoose');
-var moment = require('moment');
-var Schema = mongoose.Schema;
+import mongoose from "mongoose";
 
-let ProductoSchema = new Schema({
-    codigo:{
-        type: String,
+
+export class Producto{
+    codigo!:{
+        type: string,
         required: true,
         trim: true
-    },
-    Nombre: {
-        type: String,
+    };
+    Nombre!: {
+        type: string,
         required: true,
         trim: true
-    },
-    Precio : {
-        type: Number,
+    };
+    Precio !: {
+        type: number,
         required: true
-    },
-    Marca: {type: mongoose.Schema.Types.ObjectId, ref: 'Marca'},
-    Descripcion: {
-        type: String,
+    };
+    Marca!: {type: mongoose.Schema.Types.ObjectId, ref: 'Marca'};
+    Descripcion!: {
+        type: string,
         required: true,
         trim: true
-    },
-    FechaCreacion: {
+    };
+    FechaCreacion!: {
         type: Date,
-        default: Date.now 
-    },
-    PrecioVenta:  Number,
-    Estado: {
-        type: Boolean,
+         
+    };
+    PrecioVenta!:  number;
+    Estado!: {
+        type: boolean,
         default: true
-    },
-    EsPaginaInicial : {
-        type: Boolean,
+    };
+    EsPaginaInicial !: {
+        type: boolean,
         default: false
-    },
-    Categoria:{type: mongoose.Schema.Types.ObjectId, ref: 'Categoria' },
-    UrlImagen: {
-        type:String
+    };
+    Categoria!:{type: mongoose.Schema.Types.ObjectId, ref: 'Categoria' };
+    UrlImagen!: {
+        type:string
     
     }
 
-});
-
-
-module.exports = mongoose.model('Producto', ProductoSchema);
+}

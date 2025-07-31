@@ -4,7 +4,12 @@ import { inject } from 'inversify';
 import { IAuthService } from '../Aplication/Interface/IAuthService';
 import { TYPES } from '../Domain/Type';
 
-
+/**
+ * @swagger
+ * tags:
+ * name: auth
+ * description: Gestión de autenticacion
+ */
 @controller("/auth")
 export class AuthController {
   private readonly authService: IAuthService;
@@ -12,6 +17,30 @@ export class AuthController {
     this.authService = _authService;
   }
 
+   /**
+   * @swagger
+   * /api/auth/authenticate:
+   *   post:
+   *     summary: Autenticacion del usuario
+   *     tags: [Authentication]
+   *     requestBody:
+   *       required: true
+   *       content:
+   *         application/json:
+   *           schema:
+   *             $ref: '#/components/schemas/AuthenticatorRequest'
+   *     responses:
+   *       200:
+   *         description: autenticacion exitosa
+   *         content:
+   *           application/json:
+   *             schema:
+   *               $ref: '#/components/schemas/TokenResposne'
+   *       404:
+   *         description: Producto no creado
+   *       500:
+   *         description: Error interno del servidor
+   */
   @httpPost("/")
   async authenticate(req: Request, res: Response) {
     try {
