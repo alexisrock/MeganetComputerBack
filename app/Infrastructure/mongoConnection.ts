@@ -1,17 +1,19 @@
 import { MongoClient } from 'mongodb';
- 
+import dotenv from 'dotenv';
 
- 
+// Cargar variables de entorno
+dotenv.config();
+
 export  class MongoConecction{
 
    
-  private readonly mongoUri: string="mongodb://mongoadmin:secret@192.168.50.27:4545";
+  private readonly mongoUri: string = process.env.MONGODB_URI || "";
 
  
-  private readonly database: string="meganet";
+  private readonly database: string = process.env.MONGODB_DATABASE || "";
 
 
-  private client: MongoClient;
+  private readonly client: MongoClient;
 
 
 

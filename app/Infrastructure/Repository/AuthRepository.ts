@@ -1,6 +1,6 @@
-import { Cliente } from "../../Domain/Cliente";
-import { IRepository } from "../Interface/IRespository";
-import { MongoConecction } from "../MongoConnection";
+import { Cliente } from "../../Domain/Entities/Cliente";
+import { IRepository } from "../../Domain/Interface/IRespository";
+import { MongoConecction } from "../mongoConnection";
 import { injectable } from "inversify";
 import {  ObjectId } from 'mongodb';
 
@@ -8,7 +8,7 @@ import {  ObjectId } from 'mongodb';
 export class AuthRepository implements IRepository{
     
     document: string = "Cliente";
-    private monggoConecction : MongoConecction
+    private readonly monggoConecction : MongoConecction
 
    constructor() {
       this.monggoConecction = new MongoConecction()
@@ -34,7 +34,7 @@ export class AuthRepository implements IRepository{
         return Promise.resolve(null)
     }  
    
-    async findByEmail(email: string ): Promise< any| null> {
+    async findByEmail(email: string ): Promise< Cliente| null> {
         
         if(email=== "" || email ===  undefined )
             return Promise.resolve(null);

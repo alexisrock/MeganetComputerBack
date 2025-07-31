@@ -1,13 +1,13 @@
 import { injectable } from "inversify";
-import { Categoria } from "../../Domain/Categoria";
-import { ICategoria } from "../Interface/ICategoria";
-import { MongoConecction } from "../MongoConnection";
+import { Categoria } from "../../Domain/Entities/Categoria";
+import { ICategoria } from "../../Domain/Interface/ICategoria";
+import { MongoConecction } from "../mongoConnection";
 import {  ObjectId } from 'mongodb';
 @injectable()
 export class CategoriaRepository implements ICategoria{
 
     document: string = "Categoria";
-    private monggoConecction : MongoConecction
+    private readonly monggoConecction : MongoConecction
 
     constructor() {
        this.monggoConecction = new MongoConecction()

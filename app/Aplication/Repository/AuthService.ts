@@ -1,11 +1,11 @@
 
-import { Cliente } from "../../Domain/Cliente";
+import { Cliente } from "../../Domain/Entities/Cliente";
 import   { compareSync, hashSync } from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import { Token } from "../../Domain/Responses/Token";
 import { inject, injectable } from "inversify";
 import { IAuthService } from "../Interface/IAuthService";
-import { IRepository } from "../../DataAccess/Interface/IRespository";
+import { IRepository } from "../../Domain/Interface/IRespository";
 import { TYPES } from "../../Domain/Type";
 import { Request } from 'express';
 import { ClienteResponse } from "../../Domain/Responses/ClienteResponse";
@@ -13,8 +13,8 @@ import { Status } from "../../Domain/Enums/Status";
  
 @injectable()
 export class AuthService implements IAuthService{
-    private authRepository:  IRepository
-    private saltRounds: number = 10;
+    private readonly authRepository:  IRepository
+    private readonly saltRounds: number = 10;
     constructor( @inject(TYPES.IRepository)  _authRepository:  IRepository ){ 
         this.authRepository = _authRepository;
     }

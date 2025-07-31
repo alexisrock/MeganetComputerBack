@@ -1,4 +1,4 @@
-import { Categoria } from "../../Domain/Categoria";
+import { Categoria } from "../Entities/Categoria";
 
 
 export interface ICategoria{

@@ -1,17 +1,17 @@
 import { inject, injectable } from "inversify";
 import { ICategoryService } from "../Interface/ICategoryService";
-import { ICategoria } from '../../DataAccess/Interface/ICategoria';
+import { ICategoria } from '../../Domain/Interface/ICategoria';
 import { TYPES } from "../../Domain/Type";
 import { CategoriaResponse, CategoryOut, CategorysResponse } from "../../Domain/Responses/CategoriaResponse";
 import { Request } from 'express';
-import { Categoria } from "../../Domain/Categoria";
+import { Categoria } from "../../Domain/Entities/Categoria";
 import { Status } from "../../Domain/Enums/Status";
 
 
 @injectable()
 export class CategoryService implements ICategoryService{
 
-    private ICategoriaRepository: ICategoria;
+    private readonly ICategoriaRepository: ICategoria;
 
 
     constructor(@inject(TYPES.ICategoria)ICategoriaRepository: ICategoria ){
