@@ -4,42 +4,48 @@ import dotenv from 'dotenv';
 // Cargar variables de entorno
 dotenv.config();
 
-export  class MongoConecction{
-
-   
-  private readonly mongoUri: string = process.env.MONGODB_URI || "";
-
- 
-  private readonly database: string = process.env.MONGODB_DATABASE || "";
-
-
-  private readonly client: MongoClient;
-
-
+export class MongoConecction {
+  private static client: MongoClient;
+  private readonly mongoUri = process.env.MONGODB_URI || "";
+  private readonly database = process.env.MONGODB_DATABASE || "";
 
   constructor() {
-    this.client = new MongoClient(this.mongoUri);
+    if (!MongoConecction.client) {
+      MongoConecction.client = new MongoClient(this.mongoUri, {
+        connectTimeoutMS: 30000,
+        serverSelectionTimeoutMS: 30000,
+      });
+    }
   }
 
   async connect(): Promise<MongoClient> {
-    await this.client.connect();
-    return this.client;
+    try {
+      if (!MongoConecction.client) {
+        throw new Error("MongoClient no fue inicializado.");
+      }
+
+      // Verifica si la conexión aún está viva
+      await MongoConecction.client.db("admin").command({ ping: 1 });
+      console.log("✅ Ya estaba conectado a MongoDB");
+    } catch (err) {
+      console.log("🔄 Cliente no conectado, intentando conectar...");
+      await MongoConecction.client.connect();
+      console.log("✅ Conectado exitosamente");
+    }
+
+    return MongoConecction.client;
   }
 
-  async disconnect(): Promise<void> {
-    await this.client.close();
+
+  async getConectionDataBase(collection: string) {
+    console.log("🔌 Intentando obtener conexión");
+    const client = await this.connect();
+    return client.db(this.database).collection(collection);
   }
 
-  async getDatabase(collection: string): Promise<any> {  
-    const database = (await this.connect()).db(this.database);
-     return database.collection(collection);
+  async disconnect() {
+    if (MongoConecction.client) {
+      await MongoConecction.client.close();
+    }
   }
-
-
-  async getConectionDataBase(document: string) {
-    const client = await this.getDatabase(document);   
-    return client
- }
-
-
 }

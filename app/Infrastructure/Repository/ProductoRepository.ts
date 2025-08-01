@@ -2,7 +2,8 @@ import { injectable } from "inversify";
 import { Producto } from "../../Domain/Entities/Producto";
 import { IProducto } from "../../Domain/Interface/IProducto";
 import { MongoConecction } from "../mongoConnection";
-import { ObjectId } from 'mongodb';
+import { ObjectId, OptionalId } from 'mongodb';
+import { Collection } from "mongoose";
 
 @injectable()
 export class ProductoRepository implements IProducto {
@@ -16,8 +17,8 @@ export class ProductoRepository implements IProducto {
 
     async findByName(name: string | null): Promise<Producto | null> {
         try {
-            const producto = await this.getConectionDataBase();
-            let product = await producto.findOne({ Nombre: name });
+            const producto = await this.getConectionDataBase() ;
+            let product = await producto.findOne({ Nombre: name }) as Producto | null;
             return Promise.resolve(product);
         } catch (error) {
             throw error;
@@ -29,7 +30,7 @@ export class ProductoRepository implements IProducto {
     async create(producto: Producto): Promise<string | null> {
         try {
             const product = await this.getConectionDataBase();
-            const result = await product.insertOne(producto);
+            const result = await product.insertOne(producto as unknown as OptionalId<Document>);
             if (result.insertedId.toHexString() == null || result.insertedId.toHexString() !== undefined) {
                 return Promise.resolve(result.insertedId.toHexString());
             }
@@ -48,7 +49,7 @@ export class ProductoRepository implements IProducto {
             }
             const product = await this.getConectionDataBase();
             let documentId = new ObjectId(id);
-            let producto = await product.findOne({ _id: documentId });
+            let producto = await product.findOne({ _id: documentId }) as Producto | null;
             return Promise.resolve(producto);
         } catch (error) {
             throw error;
@@ -59,9 +60,14 @@ export class ProductoRepository implements IProducto {
 
     async findAll(): Promise<Producto[] | null> {
         try {
-            const product = await this.getConectionDataBase();
+            const product = await this.getConectionDataBase() as Collection;
             let productos = await product.find().toArray();
-            return Promise.resolve(productos);
+
+            const productosAll = productos.map((doc: any) => ({
+                ...doc,
+                _id: doc._id?.toString(), 
+            }));
+            return Promise.resolve(productosAll);
         } catch (error) {
             throw error;
         } finally {
@@ -72,9 +78,9 @@ export class ProductoRepository implements IProducto {
     async update(producto: Producto): Promise<string | null> {
         try {
             const product = await this.getConectionDataBase();
-            const result = await product.updateOne(producto);
-            if (result.insertedId.toHexString() == null || result.insertedId.toHexString() !== undefined) {
-                return Promise.resolve(result.insertedId.toHexString());
+            const result = await product.updateOne({ _id: producto._id }, producto);
+            if (result.modifiedCount > 0) {
+                return producto._id?.toString() ?? null;
             }
             return Promise.resolve(null);
         } catch (error) {
@@ -84,13 +90,14 @@ export class ProductoRepository implements IProducto {
         }
     }
 
-    async delete(id: string | null): Promise<string | null> {
+    async delete(id: string ): Promise<string | null> {
         try {
             const product = await this.getConectionDataBase();
-            const result = await product.deleteOne({ _id: id });
-            if (result.insertedId.toHexString() == null || result.insertedId.toHexString() !== undefined) {
-                return Promise.resolve(result.insertedId.toHexString());
+            const result = await product.deleteOne({ _id: new ObjectId(id) });
+            if (result.deletedCount > 0) {
+                return id; // Eliminación exitosa
             }
+
             return Promise.resolve(null);
         } catch (error) {
             throw error;

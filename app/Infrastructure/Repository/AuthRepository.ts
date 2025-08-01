@@ -2,7 +2,8 @@ import { Cliente } from "../../Domain/Entities/Cliente";
 import { IRepository } from "../../Domain/Interface/IRespository";
 import { MongoConecction } from "../mongoConnection";
 import { injectable } from "inversify";
-import {  ObjectId } from 'mongodb';
+import {  ObjectId, OptionalId } from 'mongodb';
+ 
 
 @injectable()
 export class AuthRepository implements IRepository{
@@ -19,7 +20,7 @@ export class AuthRepository implements IRepository{
         try {
             const client = await this.getConectionDataBase(); 
             let documentId = new ObjectId(id);
-            let cliente = await client.findOne({ _id: documentId}); 
+            let cliente = await client.findOne({ _id: documentId})as Cliente | null;; 
             return Promise.resolve(cliente);
         } catch (error) {
             throw error;
@@ -31,11 +32,18 @@ export class AuthRepository implements IRepository{
     
     async insert(cliente: Cliente): Promise<string | null> {
         try {
-            const client = await this.getConectionDataBase();     
-            const result = await client.insertOne(cliente);
+            const client = await this.getConectionDataBase();  
+            if (typeof cliente._id === "string") {
+                // Convertir string a ObjectId
+                (cliente as any)._id = new ObjectId(cliente._id);
+            }
+    
+                 
+            const result = await client.insertOne(cliente as unknown as OptionalId<Document>);
             if (result.insertedId.toHexString()== null || result.insertedId.toHexString() !== undefined) {
                 return Promise.resolve(result.insertedId.toHexString());  
             }
+
             return Promise.resolve(null);
         } catch (error) {
             throw error;
@@ -49,8 +57,8 @@ export class AuthRepository implements IRepository{
             if(email=== "" || email ===  undefined )
                 return Promise.resolve(null);
                   
-            const client = await this.getConectionDataBase();
-            let cliente = await client.findOne({ email: email}); 
+            const client = await this.getConectionDataBase()
+            let cliente = await client.findOne({ email: email})as Cliente | null;
             return Promise.resolve(cliente);
         } catch (error) {
             throw error;
@@ -59,13 +67,13 @@ export class AuthRepository implements IRepository{
         }
     }
 
-    async findByCedula(cedula: string | null): Promise<Cliente | null> {
+    async findByCedula(cedula: string | null): Promise<Cliente | null > {
         try {
             if(cedula=== "" || cedula ===  undefined )
-                return Promise.resolve(null);
+                return null;
                   
             const client = await this.getConectionDataBase();
-            let cliente = await client.findOne({ cedula: cedula}); 
+            let cliente = await client.findOne({ cedula: cedula}) as Cliente | null;
             return Promise.resolve(cliente);
         } catch (error) {
             throw error;

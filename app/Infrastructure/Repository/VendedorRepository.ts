@@ -2,7 +2,7 @@ import { injectable } from 'inversify';
 import { Vendedor } from '../../Domain/Entities/Vendedor';
 import { IVendedor } from '../../Domain/Interface/IVendedor';
 import { MongoConecction } from '../mongoConnection';
-import {  ObjectId } from 'mongodb';
+import {  ObjectId, OptionalId } from 'mongodb';
 
 
 @injectable()
@@ -19,7 +19,7 @@ export class VendedorRepository implements IVendedor{
     async create(vendedor: Vendedor): Promise<string | null> {
         try {
             const vendor = await this.getConectionDataBase();         
-            const result = await vendor.insertOne(vendedor);
+            const result = await vendor.insertOne(vendedor as unknown as OptionalId<Document>);
             if (result.insertedId.toHexString()== null || result.insertedId.toHexString() !== undefined) {
                 return Promise.resolve(result.insertedId.toHexString());  
             }
@@ -33,7 +33,7 @@ export class VendedorRepository implements IVendedor{
         try {
             const vendor = await this.getConectionDataBase();   
             let documentId = new ObjectId(id);
-            let cliente = await vendor.findOne({ _id: documentId}); 
+            let cliente = await vendor.findOne({ _id: documentId}) as Vendedor | null; 
             return Promise.resolve(cliente);
         } finally {
             this.disconnect();
@@ -43,7 +43,7 @@ export class VendedorRepository implements IVendedor{
     async findByName(name: string | null): Promise<Vendedor | null> {
         try {
             const vendor = await this.getConectionDataBase();       
-            let cliente = await vendor.findOne({ nombre: name}); 
+            let cliente = await vendor.findOne({ nombre: name})as Vendedor | null; 
             return Promise.resolve(cliente);
         } finally {
             this.disconnect();
@@ -54,7 +54,13 @@ export class VendedorRepository implements IVendedor{
            try {
             const vendor = await this.getConectionDataBase();         
             let vendedores = await vendor.find().toArray(); 
-            return Promise.resolve(vendedores);
+
+            const vendedoresAll = vendedores.map((doc: any) => ({
+                ...doc,
+                _id: doc._id?.toString(), 
+            }));
+
+            return Promise.resolve(vendedoresAll);
         } finally {
             this.disconnect();
         }
@@ -63,9 +69,9 @@ export class VendedorRepository implements IVendedor{
     async update(vendedor: Vendedor): Promise<string | null> {
         try {
             const vendor = await this.getConectionDataBase();        
-            const result = await vendor.updateOne(vendedor);
-            if (result.insertedId.toHexString()== null || result.insertedId.toHexString() !== undefined) {
-                return Promise.resolve(result.insertedId.toHexString());  
+            const result = await vendor.updateOne({ _id: vendedor._id }, vendedor);
+            if (result.modifiedCount > 0) {
+                return vendedor._id?.toString() ?? null;
             }
             return Promise.resolve(null);
         } catch (error) {
@@ -75,12 +81,12 @@ export class VendedorRepository implements IVendedor{
         }
     }
     
-    async delete(id: string | null): Promise<string | null> {
+    async delete(id: string ): Promise<string | null> {
         try {
             const vendor = await this.getConectionDataBase();   
-            const result = await vendor.deleteOne({ _id: id});
-            if (result.insertedId.toHexString()== null || result.insertedId.toHexString() !== undefined) {
-                return Promise.resolve(result.insertedId.toHexString());  
+            const result = await vendor.deleteOne( {_id: new ObjectId(id) });
+            if (result.deletedCount > 0) {
+                return id; // Eliminación exitosa
             }
             return Promise.resolve(null);
         } catch (error) {

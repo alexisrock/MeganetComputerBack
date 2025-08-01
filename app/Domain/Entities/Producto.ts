@@ -1,7 +1,8 @@
-import mongoose from "mongoose";
+import mongoose, { ObjectId } from "mongoose";
 
 
 export class Producto{
+    _id:ObjectId | undefined;    
     codigo!:{
         type: string,
         required: true,

@@ -1,25 +1,31 @@
 import { Request, Response } from 'express';
 import { controller, httpPost } from 'inversify-express-utils';
 import { inject } from 'inversify';
-import { IAuthService } from '../Aplication/Interface/IAuthService';
+import { IAuthService } from '../Aplication/Authentication/IAuthService';
 import { TYPES } from '../Domain/Type';
 
 /**
  * @swagger
  * tags:
- * name: auth
- * description: Gestión de autenticacion
+ *   - name: Authentication
+ *     description: Gestión de autenticacion
  */
-@controller("/auth")
+@controller("/Authentication")
 export class AuthController {
   private readonly authService: IAuthService;
+
+  /**
+  *
+  */
   constructor(@inject(TYPES.IAuthService) _authService: IAuthService) {
     this.authService = _authService;
   }
 
-   /**
+
+
+  /**
    * @swagger
-   * /api/auth/authenticate:
+   * /api/Authentication/:
    *   post:
    *     summary: Autenticacion del usuario
    *     tags: [Authentication]
@@ -35,7 +41,7 @@ export class AuthController {
    *         content:
    *           application/json:
    *             schema:
-   *               $ref: '#/components/schemas/TokenResposne'
+   *               $ref: '#/components/schemas/TokenResponse'
    *       404:
    *         description: Producto no creado
    *       500:
@@ -62,6 +68,34 @@ export class AuthController {
     }
   }
 
+
+
+
+
+  /**
+   * @swagger
+   * /api/Authentication/create:
+   *   post:
+   *     summary: Autenticacion del usuario
+   *     tags: [Authentication]
+   *     requestBody:
+   *       required: true
+   *       content:
+   *         application/json:
+   *           schema:
+   *             $ref: '#/components/schemas/ClienteRequest'
+   *     responses:
+   *       200:
+   *         description: autenticacion exitosa
+   *         content:
+   *           application/json:
+   *             schema:
+   *               $ref: '#/components/schemas/ClienteResponse'
+   *       404:
+   *         description: Producto no creado
+   *       500:
+   *         description: Error interno del servidor
+   */
   @httpPost("/create")
   async create(req: Request, res: Response) {
     try {

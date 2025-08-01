@@ -1,5 +1,7 @@
+import { ObjectId } from "mongoose";
+
 export class Cliente {
-    _id:string | undefined;
+    _id?:ObjectId ;
     cedula!: {
         type: string;
         required: [true, 'La cedula es obligatoria'];

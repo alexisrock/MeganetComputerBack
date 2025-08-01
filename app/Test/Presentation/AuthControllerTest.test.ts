@@ -1,7 +1,7 @@
 import express from "express"; 
 import request from "supertest";
 import { AuthController } from "../../Presentation/AuthController";
-import { IAuthService } from "../../Aplication/Interface/IAuthService";
+import { IAuthService } from "../../Aplication/Authentication/IAuthService";
  
 const app = express();
 app.use(express.json());

@@ -1,6 +1,8 @@
+import { Collection } from 'mongoose';
 import { DetalleFactura } from '../../Domain/Entities/DetalleFactura';
 import { IDetalleFactura } from '../../Domain/Interface/IDetalleFactura';
 import { MongoConecction } from '../mongoConnection';
+import { ObjectId, OptionalId } from 'mongodb';
 
 
 export class DetalleFacturaRepository implements IDetalleFactura{
@@ -13,11 +15,13 @@ export class DetalleFacturaRepository implements IDetalleFactura{
         this.monggoConecction = new MongoConecction()
     }
 
+ 
+
 
     async create(detalleFactura: DetalleFactura): Promise<string | null> {
         try {
             const facturadb = await this.getConectionDataBase();
-            const result = await facturadb.insertOne(detalleFactura);
+            const result = await facturadb.insertOne(detalleFactura as unknown as OptionalId<Document>);
             if (result.insertedId.toHexString() == null || result.insertedId.toHexString() !== undefined) {
                 return Promise.resolve(result.insertedId.toHexString());
             }
@@ -29,29 +33,22 @@ export class DetalleFacturaRepository implements IDetalleFactura{
         }
     }
 
-    async createAll(detalleFactura: DetalleFactura[]): Promise<string | null> {
-        try {
-            const facturadb = await this.getConectionDataBase();
-            const result = await facturadb.insertMany(detalleFactura);
-            if (result.insertedId.toHexString() == null || result.insertedId.toHexString() !== undefined) {
-                return Promise.resolve(result.insertedId.toHexString());
-            }
-            return Promise.resolve(null);
-        } catch (error) {
-            throw error;
-        } finally {
-            this.disconnect();
-        }
-    }
-
+    
+    
     async findByIdFactura(id: string | null): Promise<DetalleFactura[] | null> {
         try {
             if (!id) {
                 return Promise.resolve(null);
             }
-            const facturadb = await this.getConectionDataBase();            
+            const facturadb = await this.getConectionDataBase() as Collection;            
             let detallesfactura = await facturadb.find({ factura: id }).toArray();
-            return Promise.resolve(detallesfactura);
+
+            const detallesfacturas: DetalleFactura[] = detallesfactura.map((doc: any) => ({
+                ...doc,
+                _id: doc._id?.toString(), 
+            }));
+
+            return detallesfacturas;             
         } catch (error) {
             throw error;
         } finally {
@@ -61,13 +58,14 @@ export class DetalleFacturaRepository implements IDetalleFactura{
 
  
 
-    async delete(id: string | null): Promise<string | null> {
+    async delete(id: string ): Promise<string | null> {
         try {
             const facturadb = await this.getConectionDataBase();
-            const result = await facturadb.deleteMany({ factura: id });
-            if (result.insertedId.toHexString() == null || result.insertedId.toHexString() !== undefined) {
-                return Promise.resolve(result.insertedId.toHexString());
+            const result = await facturadb.deleteMany({ factura: new ObjectId(id) });
+            if (result.deletedCount > 0) {
+                return id; // Eliminación exitosa
             }
+
             return Promise.resolve(null);
         } catch (error) {
             throw error;

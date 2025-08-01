@@ -2,13 +2,13 @@
 import { Cliente } from "../../Domain/Entities/Cliente";
 import   { compareSync, hashSync } from 'bcrypt';
 import jwt from 'jsonwebtoken';
-import { Token } from "../../Domain/Responses/Token";
+import { Token } from "./Token";
 import { inject, injectable } from "inversify";
-import { IAuthService } from "../Interface/IAuthService";
+import { IAuthService } from "./IAuthService";
 import { IRepository } from "../../Domain/Interface/IRespository";
 import { TYPES } from "../../Domain/Type";
 import { Request } from 'express';
-import { ClienteResponse } from "../../Domain/Responses/ClienteResponse";
+import { ClienteResponse } from "./ClienteResponse";
 import { Status } from "../../Domain/Enums/Status";
  
 @injectable()
@@ -92,7 +92,7 @@ export class AuthService implements IAuthService{
     private mapperRequestCliente(req: Request): Cliente{
         let cliente = new  Cliente();
         cliente.cedula = req.body.cedulaCli,
-        cliente.nombre = req.body.nombrecli,
+        cliente.nombre = req.body.nombreCli,
         cliente.apellidos = req.body.apellidosCli,
         cliente.direccion = req.body.direccionCli,
         cliente.telefono = req.body.telefonoCli,
@@ -119,7 +119,7 @@ export class AuthService implements IAuthService{
             return clienteResponse;   
         }
 
-        clienteResponse._id = cliente._id;
+        clienteResponse._id = cliente._id?.toString();
         clienteResponse.cedula = cliente.cedula;
         clienteResponse.nombre = cliente.nombre;
         clienteResponse.apellidos = cliente.apellidos;

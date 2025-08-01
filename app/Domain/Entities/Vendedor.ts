@@ -1,5 +1,8 @@
+import { ObjectId } from "mongoose";
 
 export class Vendedor{
+    _id?:ObjectId ;
+
     usuario !: {
         type: string,
         required: true
