@@ -1,4 +1,4 @@
-import { BaseResponse } from "../../Domain/Common/BaseResponse";
+import { BaseResponse } from "../Common/BaseResponse";
 
 export class CategoriaResponse extends BaseResponse {
 

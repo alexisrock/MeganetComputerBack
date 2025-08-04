@@ -14,6 +14,17 @@ export class VendedorRepository implements IVendedor{
     constructor() {
        this.monggoConecction = new MongoConecction()
      }
+
+
+    async findByUsuario(usuario: string | null): Promise<Vendedor | null> {
+        try {
+            const vendor = await this.getConectionDataBase();       
+            let cliente = await vendor.findOne({ usuario: usuario})as Vendedor | null; 
+            return Promise.resolve(cliente);
+        } finally {
+            this.disconnect();
+        }
+    }
     
 
     async create(vendedor: Vendedor): Promise<string | null> {
@@ -69,7 +80,7 @@ export class VendedorRepository implements IVendedor{
     async update(vendedor: Vendedor): Promise<string | null> {
         try {
             const vendor = await this.getConectionDataBase();        
-            const result = await vendor.updateOne({ _id: vendedor._id }, vendedor);
+            const result = await vendor.updateOne({ _id: vendedor._id },  { $set: vendedor } );
             if (result.modifiedCount > 0) {
                 return vendedor._id?.toString() ?? null;
             }

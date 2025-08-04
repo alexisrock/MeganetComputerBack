@@ -1,6 +1,8 @@
 export const TYPES = {
     AuthController: Symbol.for('AuthController'),
     IAuthService: Symbol.for('IAuthService'),
+    IVendedorService: Symbol.for('IVendedorService'),
+
     IRepository: Symbol.for('IRepository'),
     ICategoria: Symbol.for('ICategoria'),
     ICategoryService: Symbol.for('ICategoryService'),

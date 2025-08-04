@@ -162,6 +162,51 @@ const options: Options = {
             },
           },
         },
+        VendedorRequest:{
+          type: 'object',
+          properties: {            
+            usuario: {
+              type: 'string',
+              example: '60c72b2f9b1d8e001f8e4e9f',
+              description: 'nick name del vendedor.',
+            },
+            nombre: {
+              type: 'string',
+              example: '60c72b2f9b1d8e001f8e4e9f',
+              description: 'nick name del vendedor.',
+            },
+            password: {
+              type: 'string',
+              example: 'Electrónica',
+              description: 'password del vendedor',
+            },
+          }
+        },
+        VendedorUpdateRequest:{
+          type: 'object',
+          properties: {
+            _id: {
+              type: 'string',
+              example: '60c72b2f9b1d8e001f8e4e9f',
+              description: 'ID único del vendedor.',
+            },
+            usuario: {
+              type: 'string',
+              example: '60c72b2f9b1d8e001f8e4e9f',
+              description: 'nick name del vendedor.',
+            },
+            nombre: {
+              type: 'string',
+              example: '60c72b2f9b1d8e001f8e4e9f',
+              description: 'nick name del vendedor.',
+            },
+            password: {
+              type: 'string',
+              example: 'Electrónica',
+              description: 'password del vendedor',
+            },
+          }
+        }
       },
     },
   },

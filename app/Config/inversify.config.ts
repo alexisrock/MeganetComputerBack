@@ -22,14 +22,20 @@ import { FacturaRepository } from '../Infrastructure/Repository/FacturaRepositor
 import { IFactura } from '../Domain/Interface/IFactura';
 import { DetalleFacturaRepository } from '../Infrastructure/Repository/DetalleFacturaRepository';
 import { IDetalleFactura } from '../Domain/Interface/IDetalleFactura';
- 
+import { IVendedorService } from '../Aplication/Vendedor/IVendedorService';
+import { VendedorService } from '../Aplication/Vendedor/VendedorService';
+import { VendedorController } from '../Presentation/VendedorController'
 
 
 const container = new Container();
 container.bind(AuthController).toSelf().inSingletonScope();
-container.bind(CategoriaController).toSelf().inSingletonScope();;
+container.bind(CategoriaController).toSelf().inSingletonScope();
+container.bind(VendedorController).toSelf().inSingletonScope();
+
 container.bind<IAuthService>(TYPES.IAuthService).to(AuthService);
 container.bind<ICategoryService>(TYPES.ICategoryService).to(CategoryService);
+container.bind<IVendedorService>(TYPES.IVendedorService).to(VendedorService);
+
 
 container.bind<IRepository>(TYPES.IRepository).to(AuthRepository);
 container.bind<ICategoria>(TYPES.ICategoria).to(CategoriaRepository);
