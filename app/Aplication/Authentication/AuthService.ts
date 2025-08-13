@@ -91,12 +91,12 @@ export class AuthService implements IAuthService{
 
     private mapperRequestCliente(req: Request): Cliente{
         let cliente = new  Cliente();
-        cliente.cedula = req.body.cedulaCli,
-        cliente.nombre = req.body.nombreCli,
-        cliente.apellidos = req.body.apellidosCli,
-        cliente.direccion = req.body.direccionCli,
-        cliente.telefono = req.body.telefonoCli,
-        cliente.email = req.body.emailCli,
+        cliente.cedula = req.body.cedulaCli
+        cliente.nombre = req.body.nombreCli
+        cliente.apellidos = req.body.apellidosCli
+        cliente.direccion = req.body.direccionCli
+        cliente.telefono = req.body.telefonoCli
+        cliente.email = req.body.emailCli
         cliente.password =  hashSync(req.body.pass, this.saltRounds);    
         return cliente;        
     }
@@ -119,7 +119,7 @@ export class AuthService implements IAuthService{
             return clienteResponse;   
         }
 
-        clienteResponse._id = cliente._id?.toString();
+        clienteResponse._id = cliente._id!.toString();
         clienteResponse.cedula = cliente.cedula;
         clienteResponse.nombre = cliente.nombre;
         clienteResponse.apellidos = cliente.apellidos;

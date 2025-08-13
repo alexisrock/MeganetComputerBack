@@ -1,23 +1,23 @@
 import { injectable } from "inversify";
 import { Categoria } from "../../Domain/Entities/Categoria";
 import { ICategoria } from "../../Domain/Interface/ICategoria";
-import { MongoConecction } from "../mongoConnection";
 import { ObjectId, OptionalId } from 'mongodb';
+import { BaseRepository } from "./BaseRepository";
 
 
 @injectable()
-export class CategoriaRepository implements ICategoria {
+export class CategoriaRepository extends BaseRepository  implements ICategoria {
 
     document: string = "Categoria";
-    private readonly monggoConecction: MongoConecction
+  
 
     constructor() {
-        this.monggoConecction = new MongoConecction()
+        super()       
     }
 
     async findByName(name: string | null): Promise<Categoria | null> {
         try {
-            const category = await this.getConectionDataBase();
+            const category = await this.getConectionDataBase(this.document);
             let cliente = await category.findOne({ nombreCategoria: name }) as Categoria | null;
             return Promise.resolve(cliente);
         } catch (error) {
@@ -30,7 +30,7 @@ export class CategoriaRepository implements ICategoria {
 
     async create(categoria: Categoria): Promise<string | null> {
         try {
-            const category = await this.getConectionDataBase();
+            const category = await this.getConectionDataBase(this.document);
             const result = await category.insertOne(categoria as unknown as OptionalId<Document>);
             if (result.insertedId.toHexString() == null || result.insertedId.toHexString() !== undefined) {
                 return Promise.resolve(result.insertedId.toHexString());
@@ -45,7 +45,7 @@ export class CategoriaRepository implements ICategoria {
 
     async findById(id: string): Promise<Categoria | null> {
         try {
-            const category = await this.getConectionDataBase();
+            const category = await this.getConectionDataBase(this.document);
             let documentId = new ObjectId(id);
             let cliente = await category.findOne({ _id: documentId }) as Categoria | null;
             return Promise.resolve(cliente);
@@ -58,7 +58,7 @@ export class CategoriaRepository implements ICategoria {
 
     async findAll(): Promise<Categoria[] | null> {
         try {
-            const category = await this.getConectionDataBase();
+            const category = await this.getConectionDataBase(this.document);
             let cliente = await category.find().toArray();
             if (!cliente) return null;
 
@@ -77,7 +77,7 @@ export class CategoriaRepository implements ICategoria {
 
     async update(categoria: Categoria): Promise<string | null> {
         try {
-            const category = await this.getConectionDataBase();
+            const category = await this.getConectionDataBase(this.document);
             const result = await category.updateOne({ _id: new ObjectId(categoria._id) },  // Asegúrate de convertir el string a ObjectId
                 { $set: { nombreCategoria: categoria.nombreCategoria } });
             if (result.modifiedCount > 0) {
@@ -96,7 +96,7 @@ export class CategoriaRepository implements ICategoria {
         if (!id) return null; // Validación temprana
 
         try {
-            const category = await this.getConectionDataBase();
+            const category = await this.getConectionDataBase(this.document);
 
             const result = await category.deleteOne({ _id: new ObjectId(id) });
 
@@ -112,11 +112,5 @@ export class CategoriaRepository implements ICategoria {
         }
     }
 
-    async getConectionDataBase() {
-        return await this.monggoConecction.getConectionDataBase(this.document);
-    }
-
-    disconnect() {
-        this.monggoConecction.disconnect();
-    }
+ 
 }

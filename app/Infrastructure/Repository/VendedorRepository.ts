@@ -1,24 +1,24 @@
 import { injectable } from 'inversify';
 import { Vendedor } from '../../Domain/Entities/Vendedor';
-import { IVendedor } from '../../Domain/Interface/IVendedor';
-import { MongoConecction } from '../mongoConnection';
+import { IVendedor } from '../../Domain/Interface/IVendedor'; 
 import {  ObjectId, OptionalId } from 'mongodb';
+import { BaseRepository } from './BaseRepository';
 
 
 @injectable()
-export class VendedorRepository implements IVendedor{
+export class VendedorRepository extends BaseRepository  implements IVendedor{
 
     document: string = "Vendedor";
-    private readonly monggoConecction : MongoConecction
+    
 
     constructor() {
-       this.monggoConecction = new MongoConecction()
+       super()
      }
 
 
     async findByUsuario(usuario: string | null): Promise<Vendedor | null> {
         try {
-            const vendor = await this.getConectionDataBase();       
+            const vendor = await this.getConectionDataBase(this.document);       
             let cliente = await vendor.findOne({ usuario: usuario})as Vendedor | null; 
             return Promise.resolve(cliente);
         } finally {
@@ -29,7 +29,7 @@ export class VendedorRepository implements IVendedor{
 
     async create(vendedor: Vendedor): Promise<string | null> {
         try {
-            const vendor = await this.getConectionDataBase();         
+            const vendor = await this.getConectionDataBase(this.document);         
             const result = await vendor.insertOne(vendedor as unknown as OptionalId<Document>);
             if (result.insertedId.toHexString()== null || result.insertedId.toHexString() !== undefined) {
                 return Promise.resolve(result.insertedId.toHexString());  
@@ -42,7 +42,7 @@ export class VendedorRepository implements IVendedor{
 
     async findById(id: string ): Promise<Vendedor | null> {
         try {
-            const vendor = await this.getConectionDataBase();   
+            const vendor = await this.getConectionDataBase(this.document);   
             let documentId = new ObjectId(id);
             let cliente = await vendor.findOne({ _id: documentId}) as Vendedor | null; 
             return Promise.resolve(cliente);
@@ -53,7 +53,7 @@ export class VendedorRepository implements IVendedor{
 
     async findByName(name: string | null): Promise<Vendedor | null> {
         try {
-            const vendor = await this.getConectionDataBase();       
+            const vendor = await this.getConectionDataBase(this.document);       
             let cliente = await vendor.findOne({ nombre: name})as Vendedor | null; 
             return Promise.resolve(cliente);
         } finally {
@@ -63,7 +63,7 @@ export class VendedorRepository implements IVendedor{
 
     async findAll(): Promise<Vendedor[] | null> {
            try {
-            const vendor = await this.getConectionDataBase();         
+            const vendor = await this.getConectionDataBase(this.document);         
             let vendedores = await vendor.find().toArray(); 
 
             const vendedoresAll = vendedores.map((doc: any) => ({
@@ -79,7 +79,7 @@ export class VendedorRepository implements IVendedor{
 
     async update(vendedor: Vendedor): Promise<string | null> {
         try {
-            const vendor = await this.getConectionDataBase();        
+            const vendor = await this.getConectionDataBase(this.document);        
             const result = await vendor.updateOne({ _id: vendedor._id },  { $set: vendedor } );
             if (result.modifiedCount > 0) {
                 return vendedor._id?.toString() ?? null;
@@ -94,7 +94,7 @@ export class VendedorRepository implements IVendedor{
     
     async delete(id: string ): Promise<string | null> {
         try {
-            const vendor = await this.getConectionDataBase();   
+            const vendor = await this.getConectionDataBase(this.document);   
             const result = await vendor.deleteOne( {_id: new ObjectId(id) });
             if (result.deletedCount > 0) {
                 return id; // Eliminación exitosa
@@ -105,14 +105,6 @@ export class VendedorRepository implements IVendedor{
         } finally {
             this.disconnect();
         }
-    }
-    
-    async getConectionDataBase(){
-        return await this.monggoConecction.getConectionDataBase(this.document);  
-    }
+    }    
 
-
-    disconnect(){
-        this.monggoConecction.disconnect();
-    }
 }

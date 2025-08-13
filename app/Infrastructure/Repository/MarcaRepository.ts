@@ -1,24 +1,24 @@
 import { injectable } from "inversify";
 import { IMarca } from "../../Domain/Interface/IMarca";
 import { Marca } from "../../Domain/Entities/Marca";
-import { MongoConecction } from "../mongoConnection";
 import { ObjectId, OptionalId } from 'mongodb';
 import { Collection } from "mongoose";
+import { BaseRepository } from "./BaseRepository";
 
 
 
 @injectable()
-export class MarcaRepository implements IMarca {
+export class MarcaRepository  extends BaseRepository implements IMarca {
     document: string = "Producto";
-    private readonly monggoConecction: MongoConecction
+ 
 
     constructor() {
-        this.monggoConecction = new MongoConecction()
+        super()
     }
 
     async findByName(name: string | null): Promise<Marca | null> {
         try {
-            const producto = await this.getConectionDataBase();
+            const producto = await this.getConectionDataBase(this.document);
             let product = await producto.findOne({ Nombre: name }) as Marca | null;
             return Promise.resolve(product);
         } catch (error) {
@@ -30,7 +30,7 @@ export class MarcaRepository implements IMarca {
 
     async create(marca: Marca): Promise<string | null> {
         try {
-            const product = await this.getConectionDataBase();
+            const product = await this.getConectionDataBase(this.document);
             const result = await product.insertOne(marca as unknown as OptionalId<Document>);
             if (result.insertedId.toHexString() == null || result.insertedId.toHexString() !== undefined) {
                 return Promise.resolve(result.insertedId.toHexString());
@@ -48,7 +48,7 @@ export class MarcaRepository implements IMarca {
             if (!id) {
                 return Promise.resolve(null);
             }
-            const product = await this.getConectionDataBase();
+            const product = await this.getConectionDataBase(this.document);
             let documentId = new ObjectId(id);
             let producto = await product.findOne({ _id: documentId }) as Marca | null;
             return Promise.resolve(producto);
@@ -61,7 +61,7 @@ export class MarcaRepository implements IMarca {
 
     async findAll(): Promise<Marca[] | null> {
         try {
-            const product = await this.getConectionDataBase() as Collection;
+            const product = await this.getConectionDataBase(this.document) as Collection;
             let marca = await product.find().toArray();
 
             const marcas = marca.map((doc: any) => ({
@@ -79,7 +79,7 @@ export class MarcaRepository implements IMarca {
 
     async update(marca: Marca): Promise<string | null> {
         try {
-            const product = await this.getConectionDataBase();
+            const product = await this.getConectionDataBase(this.document);
             const result = await product.updateOne({ _id: marca._id }, marca);
             if (result.modifiedCount > 0) {
                 return marca._id?.toString() ?? null;
@@ -94,7 +94,7 @@ export class MarcaRepository implements IMarca {
 
     async delete(id: string ): Promise<string | null> {
         try {
-            const product = await this.getConectionDataBase();
+            const product = await this.getConectionDataBase(this.document);
             const result = await product.deleteOne({ _id: new ObjectId(id) });
 
             if (result.deletedCount > 0) {
@@ -108,16 +108,5 @@ export class MarcaRepository implements IMarca {
             this.disconnect();
         }
     }
-
-    async getConectionDataBase() {
-        return await this.monggoConecction.getConectionDataBase(this.document);
-    }
-
-    disconnect() {
-        this.monggoConecction.disconnect();
-    }
-    
-
-
     
 }

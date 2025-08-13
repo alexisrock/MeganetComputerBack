@@ -1,24 +1,23 @@
 import { injectable } from "inversify";
 import { Inventario } from "../../Domain/Entities/Inventario";
 import { IInventario } from "../../Domain/Interface/IInventario";
-import { MongoConecction } from "../mongoConnection";
 import { ObjectId, OptionalId } from 'mongodb';
 import { Collection } from "mongoose";
+import { BaseRepository } from "./BaseRepository";
 
 @injectable()
-export class InventarioRepository implements IInventario {
+export class InventarioRepository extends BaseRepository  implements IInventario {
 
     document: string = "Inventario";
-    private readonly monggoConecction: MongoConecction
 
     constructor() {
-        this.monggoConecction = new MongoConecction()
+        super()        
     }
 
   
     async create(inventario: Inventario): Promise<string | null> {
         try {
-            const inventory = await this.getConectionDataBase();
+            const inventory = await this.getConectionDataBase(this.document);
             const result = await inventory.insertOne(inventario  as unknown as OptionalId<Document>);
             if (result.insertedId.toHexString() == null || result.insertedId.toHexString() !== undefined) {
                 return Promise.resolve(result.insertedId.toHexString());
@@ -36,7 +35,7 @@ export class InventarioRepository implements IInventario {
             if (!id) {
                 return Promise.resolve(null);
             }
-            const inventory = await this.getConectionDataBase();
+            const inventory = await this.getConectionDataBase(this.document);
             let documentId = new ObjectId(id);
             let inventario = await inventory.findOne({ _id: documentId }) as Inventario | null;
             return Promise.resolve(inventario);
@@ -49,7 +48,7 @@ export class InventarioRepository implements IInventario {
 
     async findAll(): Promise<Inventario[] | null> {
         try {
-            const inventory = await this.getConectionDataBase() as Collection;
+            const inventory = await this.getConectionDataBase(this.document) as Collection;
             let inventarios = await inventory.find().toArray();
             
             const inventariosAll = inventarios.map((doc: any) => ({
@@ -67,7 +66,7 @@ export class InventarioRepository implements IInventario {
 
     async update(inventario: Inventario): Promise<string | null> {
         try {
-            const inventory = await this.getConectionDataBase();
+            const inventory = await this.getConectionDataBase(this.document);
             const result = await inventory.updateOne({ _id: inventario._id }, inventario);
             if (result.modifiedCount > 0) {
                 return inventario._id?.toString() ?? null;
@@ -83,7 +82,7 @@ export class InventarioRepository implements IInventario {
 
     async delete(id: string ): Promise<string | null> {
         try {
-            const inventory = await this.getConectionDataBase();
+            const inventory = await this.getConectionDataBase(this.document);
             const result = await inventory.deleteOne({ _id: new ObjectId(id) });
             if (result.deletedCount > 0) {
                 return id; // Eliminación exitosa
@@ -97,11 +96,5 @@ export class InventarioRepository implements IInventario {
         }
     }
 
-    async getConectionDataBase() {
-        return await this.monggoConecction.getConectionDataBase(this.document);
-    }
 
-    disconnect() {
-        this.monggoConecction.disconnect();
-    }
 }

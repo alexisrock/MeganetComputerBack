@@ -25,23 +25,36 @@ import { IDetalleFactura } from '../Domain/Interface/IDetalleFactura';
 import { IVendedorService } from '../Aplication/Vendedor/IVendedorService';
 import { VendedorService } from '../Aplication/Vendedor/VendedorService';
 import { VendedorController } from '../Presentation/VendedorController'
+import { IClienteService } from '../Aplication/Cliente/IClienteService';
+import { ClienteService } from '../Aplication/Cliente/ClienteService';
+import { ClienteController } from '../Presentation/ClienteController';
+import { MarcaService } from '../Aplication/Marca/MarcaService';
+import { IMarcaService } from '../Aplication/Marca/IMarcaService';
+import { MarcaController } from '../Presentation/MarcaController';
 
 
 const container = new Container();
 container.bind(AuthController).toSelf().inSingletonScope();
 container.bind(CategoriaController).toSelf().inSingletonScope();
 container.bind(VendedorController).toSelf().inSingletonScope();
+container.bind(ClienteController).toSelf().inSingletonScope();
+container.bind(MarcaController).toSelf().inSingletonScope();
+
+
 
 container.bind<IAuthService>(TYPES.IAuthService).to(AuthService);
 container.bind<ICategoryService>(TYPES.ICategoryService).to(CategoryService);
 container.bind<IVendedorService>(TYPES.IVendedorService).to(VendedorService);
+container.bind<IClienteService>(TYPES.IClienteService).to(ClienteService);
+container.bind<IMarcaService>(TYPES.IMarcaService).to(MarcaService);
+
 
 
 container.bind<IRepository>(TYPES.IRepository).to(AuthRepository);
 container.bind<ICategoria>(TYPES.ICategoria).to(CategoriaRepository);
 container.bind<IVendedor>(TYPES.IVendedor).to(VendedorRepository);
 container.bind<IProducto>(TYPES.IProducto).to(ProductoRepository);
-container.bind<IMarca>(TYPES.IProducto).to(MarcaRepository);
+container.bind<IMarca>(TYPES.IMarca).to(MarcaRepository);
 container.bind<IInventario>(TYPES.IInventario).to(InventarioRepository);
 container.bind<IFactura>(TYPES.IFactura).to(FacturaRepository);
 container.bind<IDetalleFactura>(TYPES.IDetalleFactura).to(DetalleFacturaRepository);

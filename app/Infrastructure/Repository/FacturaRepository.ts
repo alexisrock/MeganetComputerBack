@@ -1,24 +1,23 @@
 import { injectable } from 'inversify';
 import { Factura } from '../../Domain/Entities/Factura';
 import { IFactura } from '../../Domain/Interface/IFactura';
-
-import { MongoConecction } from "../mongoConnection";
 import { ObjectId, OptionalId } from 'mongodb';
 import { Collection } from 'mongoose';
+import { BaseRepository } from './BaseRepository';
 @injectable()
-export class FacturaRepository implements IFactura{
+export class FacturaRepository extends BaseRepository  implements IFactura{
 
 
     document: string = "Factura";
-    private readonly monggoConecction: MongoConecction
+ 
 
     constructor() {
-        this.monggoConecction = new MongoConecction()
+        super()
     }
 
     async create(factura: Factura): Promise<string | null> {
         try {
-            const facturadb = await this.getConectionDataBase();
+            const facturadb = await this.getConectionDataBase(this.document);
             const result = await facturadb.insertOne(factura as unknown as OptionalId<Document>);
             if (result.insertedId.toHexString() == null || result.insertedId.toHexString() !== undefined) {
                 return Promise.resolve(result.insertedId.toHexString());
@@ -35,7 +34,7 @@ export class FacturaRepository implements IFactura{
             if (!id) {
                 return Promise.resolve(null);
             }
-            const facturadb = await this.getConectionDataBase();
+            const facturadb = await this.getConectionDataBase(this.document);
             let documentId = new ObjectId(id) ;
             let inventario = await facturadb.findOne({ _id: documentId }) as Factura | null;
             return Promise.resolve(inventario);
@@ -48,7 +47,7 @@ export class FacturaRepository implements IFactura{
 
     async findAll(): Promise<Factura[] | null> {
           try {
-            const facturadb = await this.getConectionDataBase() as Collection;
+            const facturadb = await this.getConectionDataBase(this.document) as Collection;
             let facturas = await facturadb.find().toArray();
             const Facturas: Factura[] = facturas.map((doc: any) => ({
                 ...doc,
@@ -63,7 +62,7 @@ export class FacturaRepository implements IFactura{
     }
     async update(factura: Factura): Promise<string | null> {
         try {
-            const facturadb = await this.getConectionDataBase();
+            const facturadb = await this.getConectionDataBase(this.document);
             const result = await facturadb.updateOne({  _id: factura._id },  // Asegúrate de convertir el string a ObjectId
             { $set: { factura}});
         if (result.modifiedCount > 0) {
@@ -79,7 +78,7 @@ export class FacturaRepository implements IFactura{
 
     async delete(id: string ): Promise<string | null> {
           try {
-            const facturadb = await this.getConectionDataBase();
+            const facturadb = await this.getConectionDataBase(this.document);
             const result = await facturadb.deleteOne({ _id: new ObjectId(id) });
             if (result.deletedCount > 0) {
                 return id; // Eliminación exitosa
@@ -91,14 +90,5 @@ export class FacturaRepository implements IFactura{
         } finally {
             this.disconnect();
         }
-    }
-
-
-    async getConectionDataBase() {
-        return await this.monggoConecction.getConectionDataBase(this.document);
-    }
-
-    disconnect() {
-        this.monggoConecction.disconnect();
     }
 }

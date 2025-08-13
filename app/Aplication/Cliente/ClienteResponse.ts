@@ -1,6 +1,6 @@
 import { ObjectId } from "mongoose";
 
-export class Cliente {
+export class ClienteResponse {
     _id?:ObjectId ;
     cedula!: {
         type: string;
@@ -15,9 +15,7 @@ export class Cliente {
     apellidos!: string;
     direccion!: string;
     telefono!: string;
-    email!: string;       
-    password!:  string;     
-    estado!:  boolean;
-    passwordResetToken!: string;
-    passwordResetTokenExpires!: Date;
+    email!: string;
+    estado!:  boolean;    
+
 }

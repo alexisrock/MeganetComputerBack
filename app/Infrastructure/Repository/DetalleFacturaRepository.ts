@@ -1,18 +1,18 @@
 import { Collection } from 'mongoose';
 import { DetalleFactura } from '../../Domain/Entities/DetalleFactura';
 import { IDetalleFactura } from '../../Domain/Interface/IDetalleFactura';
-import { MongoConecction } from '../mongoConnection';
 import { ObjectId, OptionalId } from 'mongodb';
+import { BaseRepository } from './BaseRepository';
 
 
-export class DetalleFacturaRepository implements IDetalleFactura{
+export class DetalleFacturaRepository extends BaseRepository  implements IDetalleFactura{
 
 
     document: string = "DetalleFactura";
-    private readonly monggoConecction: MongoConecction
+    
 
     constructor() {
-        this.monggoConecction = new MongoConecction()
+        super()
     }
 
  
@@ -20,7 +20,7 @@ export class DetalleFacturaRepository implements IDetalleFactura{
 
     async create(detalleFactura: DetalleFactura): Promise<string | null> {
         try {
-            const facturadb = await this.getConectionDataBase();
+            const facturadb = await this.getConectionDataBase(this.document);
             const result = await facturadb.insertOne(detalleFactura as unknown as OptionalId<Document>);
             if (result.insertedId.toHexString() == null || result.insertedId.toHexString() !== undefined) {
                 return Promise.resolve(result.insertedId.toHexString());
@@ -40,7 +40,7 @@ export class DetalleFacturaRepository implements IDetalleFactura{
             if (!id) {
                 return Promise.resolve(null);
             }
-            const facturadb = await this.getConectionDataBase() as Collection;            
+            const facturadb = await this.getConectionDataBase(this.document) as Collection;            
             let detallesfactura = await facturadb.find({ factura: id }).toArray();
 
             const detallesfacturas: DetalleFactura[] = detallesfactura.map((doc: any) => ({
@@ -60,7 +60,7 @@ export class DetalleFacturaRepository implements IDetalleFactura{
 
     async delete(id: string ): Promise<string | null> {
         try {
-            const facturadb = await this.getConectionDataBase();
+            const facturadb = await this.getConectionDataBase(this.document);
             const result = await facturadb.deleteMany({ factura: new ObjectId(id) });
             if (result.deletedCount > 0) {
                 return id; // Eliminación exitosa
@@ -72,15 +72,5 @@ export class DetalleFacturaRepository implements IDetalleFactura{
         } finally {
             this.disconnect();
         }
-    }
-
-
-    async getConectionDataBase() {
-        return await this.monggoConecction.getConectionDataBase(this.document);
-    }
-
-    disconnect() {
-        this.monggoConecction.disconnect();
-    }
-    
+    }    
 }

@@ -1,23 +1,23 @@
 import { injectable } from "inversify";
 import { Producto } from "../../Domain/Entities/Producto";
 import { IProducto } from "../../Domain/Interface/IProducto";
-import { MongoConecction } from "../mongoConnection";
 import { ObjectId, OptionalId } from 'mongodb';
 import { Collection } from "mongoose";
+import { BaseRepository } from "./BaseRepository";
 
 @injectable()
-export class ProductoRepository implements IProducto {
+export class ProductoRepository extends BaseRepository  implements IProducto  {
 
     document: string = "Producto";
-    private readonly monggoConecction: MongoConecction
+    
 
     constructor() {
-        this.monggoConecction = new MongoConecction()
+       super()
     }
 
     async findByName(name: string | null): Promise<Producto | null> {
         try {
-            const producto = await this.getConectionDataBase() ;
+            const producto = await this.getConectionDataBase(this.document) ;
             let product = await producto.findOne({ Nombre: name }) as Producto | null;
             return Promise.resolve(product);
         } catch (error) {
@@ -29,7 +29,7 @@ export class ProductoRepository implements IProducto {
 
     async create(producto: Producto): Promise<string | null> {
         try {
-            const product = await this.getConectionDataBase();
+            const product = await this.getConectionDataBase(this.document);
             const result = await product.insertOne(producto as unknown as OptionalId<Document>);
             if (result.insertedId.toHexString() == null || result.insertedId.toHexString() !== undefined) {
                 return Promise.resolve(result.insertedId.toHexString());
@@ -47,7 +47,7 @@ export class ProductoRepository implements IProducto {
             if (!id) {
                 return Promise.resolve(null);
             }
-            const product = await this.getConectionDataBase();
+            const product = await this.getConectionDataBase(this.document);
             let documentId = new ObjectId(id);
             let producto = await product.findOne({ _id: documentId }) as Producto | null;
             return Promise.resolve(producto);
@@ -60,7 +60,7 @@ export class ProductoRepository implements IProducto {
 
     async findAll(): Promise<Producto[] | null> {
         try {
-            const product = await this.getConectionDataBase() as Collection;
+            const product = await this.getConectionDataBase(this.document) as Collection;
             let productos = await product.find().toArray();
 
             const productosAll = productos.map((doc: any) => ({
@@ -77,7 +77,7 @@ export class ProductoRepository implements IProducto {
 
     async update(producto: Producto): Promise<string | null> {
         try {
-            const product = await this.getConectionDataBase();
+            const product = await this.getConectionDataBase(this.document);
             const result = await product.updateOne({ _id: producto._id }, producto);
             if (result.modifiedCount > 0) {
                 return producto._id?.toString() ?? null;
@@ -92,7 +92,7 @@ export class ProductoRepository implements IProducto {
 
     async delete(id: string ): Promise<string | null> {
         try {
-            const product = await this.getConectionDataBase();
+            const product = await this.getConectionDataBase(this.document);
             const result = await product.deleteOne({ _id: new ObjectId(id) });
             if (result.deletedCount > 0) {
                 return id; // Eliminación exitosa
@@ -105,12 +105,5 @@ export class ProductoRepository implements IProducto {
             this.disconnect();
         }
     }
-
-    async getConectionDataBase() {
-        return await this.monggoConecction.getConectionDataBase(this.document);
-    }
-
-    disconnect() {
-        this.monggoConecction.disconnect();
-    }
+  
 }
